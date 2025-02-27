@@ -20,27 +20,31 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnEquis: Button
     private lateinit var btnRedondo: Button
 
-    private var jugadorInicial = "X" // Valor por defecto
+    private var jugadorInicial = "X" // Valor por defecto para el icono (X o O)
+    private var inicio = "Al Azar"    // Quién empieza: "Yo", "CPU" o "Al Azar"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Ajustar padding según las insets del sistema
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Inicializar botones
+        // Inicializar botones de dificultad
         btnFacil = findViewById(R.id.btnFacil)
         btnMedio = findViewById(R.id.btnMedio)
         btnDificil = findViewById(R.id.btnDificil)
 
+        // Inicializar botones de quién inicia
         btnYo = findViewById(R.id.btnYo)
         btnCpu = findViewById(R.id.btnCpu)
         btnAzar = findViewById(R.id.btnAzar)
 
+        // Inicializar botones de icono
         btnEquis = findViewById(R.id.btnEquis)
         btnRedondo = findViewById(R.id.btnRedondo)
 
@@ -49,38 +53,48 @@ class MainActivity : AppCompatActivity() {
         setSelectedButton(btnAzar, listOf(btnYo, btnCpu, btnAzar))
         setSelectedButton(btnEquis, listOf(btnEquis, btnRedondo))
 
-        // Configurar los listeners para los botones de dificultad
+        // Listeners para dificultad (en este ejemplo solo se implementa "Facil")
         btnFacil.setOnClickListener { setSelectedButton(btnFacil, listOf(btnFacil, btnMedio, btnDificil)) }
         btnMedio.setOnClickListener { setSelectedButton(btnMedio, listOf(btnFacil, btnMedio, btnDificil)) }
         btnDificil.setOnClickListener { setSelectedButton(btnDificil, listOf(btnFacil, btnMedio, btnDificil)) }
 
-        // Configurar los listeners para los botones de inicio de juego
-        btnYo.setOnClickListener { setSelectedButton(btnYo, listOf(btnYo, btnCpu, btnAzar)) }
-        btnCpu.setOnClickListener { setSelectedButton(btnCpu, listOf(btnYo, btnCpu, btnAzar)) }
-        btnAzar.setOnClickListener { setSelectedButton(btnAzar, listOf(btnYo, btnCpu, btnAzar)) }
+        // Listeners para quién inicia
+        btnYo.setOnClickListener {
+            setSelectedButton(btnYo, listOf(btnYo, btnCpu, btnAzar))
+            inicio = "Yo"
+        }
+        btnCpu.setOnClickListener {
+            setSelectedButton(btnCpu, listOf(btnYo, btnCpu, btnAzar))
+            inicio = "CPU"
+        }
+        btnAzar.setOnClickListener {
+            setSelectedButton(btnAzar, listOf(btnYo, btnCpu, btnAzar))
+            inicio = "Al Azar"
+        }
 
-        // Configurar los listeners para los botones de icono (X y O)
+        // Listeners para el icono (X o O)
         btnEquis.setOnClickListener {
             setSelectedButton(btnEquis, listOf(btnEquis, btnRedondo))
             jugadorInicial = "X"
         }
-
         btnRedondo.setOnClickListener {
             setSelectedButton(btnRedondo, listOf(btnEquis, btnRedondo))
             jugadorInicial = "O"
         }
 
-        // Configurar el botón "Jugar" para abrir la actividad Juego y pasar el jugador inicial
+        // Configurar el botón "Jugar" para iniciar la actividad Juego y pasar la configuración
         val jugarButton: Button = findViewById(R.id.button9)
         jugarButton.setOnClickListener {
             val intent = Intent(this, Juego::class.java)
-            intent.putExtra("jugadorInicial", jugadorInicial) // Enviar el jugador inicial
+            intent.putExtra("jugadorInicial", jugadorInicial) // Icono del jugador (X o O)
+            intent.putExtra("dificultad", "Facil")             // Modo: en este caso, Fácil
+            intent.putExtra("inicio", inicio)                   // Quién empieza: "Yo", "CPU" o "Al Azar"
             startActivity(intent)
         }
     }
 
     private fun setSelectedButton(selectedButton: Button, buttonGroup: List<Button>) {
-        // Restaurar todos los botones del grupo al color de no seleccionado
+        // Restaurar color de todos los botones del grupo
         for (button in buttonGroup) {
             button.setBackgroundColor(getColor(R.color.unselected))
         }

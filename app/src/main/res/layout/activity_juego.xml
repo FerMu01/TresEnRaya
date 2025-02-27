@@ -95,4 +95,20 @@
                 android:text=""/>
 
     </GridLayout>
+    <TextView
+            android:text="Turno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtTurno"
+            android:textSize="25dp"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="135dp"/>
+    <Button
+            android:text="Volver A Jugar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnReinicio"
+            android:enabled="false"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="50dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
