@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private var jugadorInicial = "X" // Valor por defecto para el icono (X o O)
     private var inicio = "Al Azar"    // Quién empieza: "Yo", "CPU" o "Al Azar"
+    private var dificultad = "Medio"  // Valor por defecto, se modifica según botón
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,13 +51,25 @@ class MainActivity : AppCompatActivity() {
 
         // Seleccionar por defecto "Medio", "Al Azar" y "X"
         setSelectedButton(btnMedio, listOf(btnFacil, btnMedio, btnDificil))
+        dificultad = "Medio"
         setSelectedButton(btnAzar, listOf(btnYo, btnCpu, btnAzar))
+        inicio = "Al Azar"
         setSelectedButton(btnEquis, listOf(btnEquis, btnRedondo))
+        jugadorInicial = "X"
 
-        // Listeners para dificultad (en este ejemplo solo se implementa "Facil")
-        btnFacil.setOnClickListener { setSelectedButton(btnFacil, listOf(btnFacil, btnMedio, btnDificil)) }
-        btnMedio.setOnClickListener { setSelectedButton(btnMedio, listOf(btnFacil, btnMedio, btnDificil)) }
-        btnDificil.setOnClickListener { setSelectedButton(btnDificil, listOf(btnFacil, btnMedio, btnDificil)) }
+        // Listeners para dificultad
+        btnFacil.setOnClickListener {
+            setSelectedButton(btnFacil, listOf(btnFacil, btnMedio, btnDificil))
+            dificultad = "Facil"
+        }
+        btnMedio.setOnClickListener {
+            setSelectedButton(btnMedio, listOf(btnFacil, btnMedio, btnDificil))
+            dificultad = "Medio"
+        }
+        btnDificil.setOnClickListener {
+            setSelectedButton(btnDificil, listOf(btnFacil, btnMedio, btnDificil))
+            dificultad = "Dificil"
+        }
 
         // Listeners para quién inicia
         btnYo.setOnClickListener {
@@ -87,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         jugarButton.setOnClickListener {
             val intent = Intent(this, Juego::class.java)
             intent.putExtra("jugadorInicial", jugadorInicial) // Icono del jugador (X o O)
-            intent.putExtra("dificultad", "Facil")             // Modo: en este caso, Fácil
+            intent.putExtra("dificultad", dificultad)           // Modo: "Facil", "Medio" o "Dificil"
             intent.putExtra("inicio", inicio)                   // Quién empieza: "Yo", "CPU" o "Al Azar"
             startActivity(intent)
         }

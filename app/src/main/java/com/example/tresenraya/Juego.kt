@@ -15,7 +15,7 @@ class Juego : AppCompatActivity() {
 
     private var currentPlayer = "X"
     private val boardStatus = Array(3) { Array(3) { "" } } // Estado del tablero
-    private var gameMode = "Facil" // Solo implementamos Fácil en este ejemplo
+    private var gameMode = "Facil" // Se espera "Facil", "Medio" o "Dificil"
     private var inicio = "Al Azar" // Quién inicia, obtenido del intent
     private lateinit var userIcon: String
 
@@ -59,23 +59,18 @@ class Juego : AppCompatActivity() {
             txtTurno.text = "Es Tu Turno"
         } else {
             txtTurno.text = "Turno De La CPU"
-            if (gameMode == "Facil") {
-                delayedCpuMove()
-            }
+            delayedCpuMove()
         }
 
         // Configurar el botón de reinicio para volver a jugar
         btnReinicio.setOnClickListener {
             resetBoard()
             btnReinicio.isEnabled = false
-            // Actualizar mensaje según quién empieza después del reinicio
             if (currentPlayer == userIcon) {
                 txtTurno.text = "Es Tu Turno"
             } else {
                 txtTurno.text = "Turno De La CPU"
-                if (gameMode == "Facil") {
-                    delayedCpuMove()
-                }
+                delayedCpuMove()
             }
         }
     }
@@ -89,7 +84,7 @@ class Juego : AppCompatActivity() {
         boardStatus[row][col] = currentPlayer
 
         // Verificar si hay un ganador
-        if (checkWinner()) {
+        if (checkWinnerFor(userIcon)) {
             txtTurno.text = "Ganaste"
             btnReinicio.isEnabled = true
             return
@@ -101,26 +96,33 @@ class Juego : AppCompatActivity() {
             return
         }
 
-        // Cambiar turno
-        currentPlayer = if (currentPlayer == "X") "O" else "X"
-
-        // Actualizar mensaje de turno
-        if (currentPlayer == userIcon) {
-            txtTurno.text = "Es Tu Turno"
-        } else {
-            txtTurno.text = "Turno De La CPU"
-            if (gameMode == "Facil") {
-                delayedCpuMove()
-            }
-        }
+        // Cambiar turno a la CPU
+        currentPlayer = getCpuMarker()
+        txtTurno.text = "Turno De La CPU"
+        delayedCpuMove()
     }
 
     private fun delayedCpuMove() {
-        // Retardo de 1 segundo antes de que la CPU juegue
         Handler(Looper.getMainLooper()).postDelayed({ cpuMove() }, 1000)
     }
 
     private fun cpuMove() {
+        if (gameMode == "Facil") {
+            randomCpuMove()
+        } else if (gameMode == "Medio") {
+            if (!medioCpuMove()) {
+                randomCpuMove()
+            }
+        } else {
+            // Para "Dificil" se implementaría minimax; aquí se puede usar la estrategia medio como fallback
+            if (!medioCpuMove()) {
+                randomCpuMove()
+            }
+        }
+    }
+
+    // Modo Fácil: movimiento aleatorio
+    private fun randomCpuMove() {
         val emptyCells = mutableListOf<Pair<Int, Int>>()
         for (i in 0..2) {
             for (j in 0..2) {
@@ -131,25 +133,88 @@ class Juego : AppCompatActivity() {
         }
         if (emptyCells.isNotEmpty()) {
             val (row, col) = emptyCells.random()
-            board[row][col].text = currentPlayer
-            boardStatus[row][col] = currentPlayer
-
-            if (checkWinner()) {
-                txtTurno.text = "Gano La CPU"
-                btnReinicio.isEnabled = true
-                return
-            }
-            if (isBoardFull()) {
-                txtTurno.text = "Empate"
-                btnReinicio.isEnabled = true
-                return
-            }
-            // Cambiar turno nuevamente al usuario
-            currentPlayer = userIcon
-            txtTurno.text = "Es Tu Turno"
+            makeCpuMove(row, col)
         }
     }
 
+    // Modo Medio: intenta ganar o bloquear; si no se cumple, usa heurísticas (centro y esquinas)
+    private fun medioCpuMove(): Boolean {
+        val cpuMarker = getCpuMarker()
+        // 1. Si la CPU puede ganar, hazlo.
+        val winMove = findWinningMove(cpuMarker)
+        if (winMove != null) {
+            makeCpuMove(winMove.first, winMove.second)
+            return true
+        }
+        // 2. Si el usuario puede ganar en el siguiente movimiento, bloquea.
+        val blockMove = findWinningMove(userIcon)
+        if (blockMove != null) {
+            makeCpuMove(blockMove.first, blockMove.second)
+            return true
+        }
+        // 3. Solo a veces tomar el centro si está libre (por ejemplo, 50% de probabilidad)
+        if (boardStatus[1][1].isEmpty() && Random.nextFloat() < 0.5f) {
+            makeCpuMove(1, 1)
+            return true
+        }
+        // 4. Tomar alguna esquina libre.
+        val corners = listOf(Pair(0, 0), Pair(0, 2), Pair(2, 0), Pair(2, 2))
+        val availableCorners = corners.filter { boardStatus[it.first][it.second].isEmpty() }
+        if (availableCorners.isNotEmpty()) {
+            val corner = availableCorners.random()
+            makeCpuMove(corner.first, corner.second)
+            return true
+        }
+        return false
+    }
+
+    // Realiza el movimiento de la CPU en la celda (row, col)
+    private fun makeCpuMove(row: Int, col: Int) {
+        board[row][col].text = currentPlayer
+        boardStatus[row][col] = currentPlayer
+        if (checkWinnerFor(getCpuMarker())) {
+            txtTurno.text = "Gano La CPU"
+            btnReinicio.isEnabled = true
+            return
+        }
+        if (isBoardFull()) {
+            txtTurno.text = "Empate"
+            btnReinicio.isEnabled = true
+            return
+        }
+        currentPlayer = userIcon
+        txtTurno.text = "Es Tu Turno"
+    }
+
+    // Busca un movimiento ganador para el marcador dado y lo retorna; de lo contrario, null.
+    private fun findWinningMove(marker: String): Pair<Int, Int>? {
+        for (i in 0..2) {
+            for (j in 0..2) {
+                if (boardStatus[i][j].isEmpty()) {
+                    boardStatus[i][j] = marker
+                    if (checkWinFor(marker)) {
+                        boardStatus[i][j] = ""
+                        return Pair(i, j)
+                    }
+                    boardStatus[i][j] = ""
+                }
+            }
+        }
+        return null
+    }
+
+    // Función auxiliar que verifica si un marcador gana en el tablero actual.
+    private fun checkWinFor(marker: String): Boolean {
+        for (i in 0..2) {
+            if (boardStatus[i][0] == marker && boardStatus[i][1] == marker && boardStatus[i][2] == marker) return true
+            if (boardStatus[0][i] == marker && boardStatus[1][i] == marker && boardStatus[2][i] == marker) return true
+        }
+        if (boardStatus[0][0] == marker && boardStatus[1][1] == marker && boardStatus[2][2] == marker) return true
+        if (boardStatus[0][2] == marker && boardStatus[1][1] == marker && boardStatus[2][0] == marker) return true
+        return false
+    }
+
+    // Verifica si el tablero está lleno.
     private fun isBoardFull(): Boolean {
         for (i in 0..2) {
             for (j in 0..2) {
@@ -159,25 +224,14 @@ class Juego : AppCompatActivity() {
         return true
     }
 
-    private fun checkWinner(): Boolean {
-        // Verificar filas y columnas
-        for (i in 0..2) {
-            if (boardStatus[i][0] == currentPlayer &&
-                boardStatus[i][1] == currentPlayer &&
-                boardStatus[i][2] == currentPlayer) return true
-            if (boardStatus[0][i] == currentPlayer &&
-                boardStatus[1][i] == currentPlayer &&
-                boardStatus[2][i] == currentPlayer) return true
-        }
-        // Verificar diagonales
-        if (boardStatus[0][0] == currentPlayer &&
-            boardStatus[1][1] == currentPlayer &&
-            boardStatus[2][2] == currentPlayer) return true
-        if (boardStatus[0][2] == currentPlayer &&
-            boardStatus[1][1] == currentPlayer &&
-            boardStatus[2][0] == currentPlayer) return true
+    // Utiliza checkWinFor para el marcador indicado.
+    private fun checkWinnerFor(marker: String): Boolean {
+        return checkWinFor(marker)
+    }
 
-        return false
+    // Devuelve el marcador que usa la CPU (opuesto al del usuario).
+    private fun getCpuMarker(): String {
+        return if (userIcon == "X") "O" else "X"
     }
 
     private fun resetBoard() {
@@ -187,10 +241,10 @@ class Juego : AppCompatActivity() {
                 boardStatus[i][j] = ""
             }
         }
-        // Reiniciar turno según la configuración original
+        // Reiniciar turno según la configuración original.
         currentPlayer = when (inicio) {
-            "CPU" -> if (userIcon == "X") "O" else "X"
-            "Al Azar" -> if (Random.nextBoolean()) userIcon else if (userIcon == "X") "O" else "X"
+            "CPU" -> getCpuMarker()
+            "Al Azar" -> if (Random.nextBoolean()) userIcon else getCpuMarker()
             else -> userIcon
         }
     }
