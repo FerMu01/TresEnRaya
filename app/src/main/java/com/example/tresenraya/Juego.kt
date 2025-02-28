@@ -25,8 +25,7 @@ class Juego : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_juego)
-        window.statusBarColor = android.graphics.Color.WHITE
-
+        window.statusBarColor = android.graphics.Color.parseColor("#0D0D0D")
         // Asignar los TextView y botón de reinicio
         txtTurno = findViewById(R.id.txtTurno)
         btnReinicio = findViewById(R.id.btnReinicio)

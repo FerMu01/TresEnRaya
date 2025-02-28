@@ -127,8 +127,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/txtTurno"
             android:textSize="25dp"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="100dp"/>
+            app:layout_constraintBottom_toTopOf="@+id/btnReinicio"
+            android:layout_marginBottom="10dp" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
     <Button
             android:text="Volver A Jugar"
             android:layout_width="wrap_content"
@@ -138,14 +139,22 @@
             android:id="@+id/btnReinicio"
             android:enabled="false"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="50dp"/>
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="25dp"/>
     <TextView
             android:text="Dificultad:"
             android:layout_width="wrap_content"
             android:textSize="25dp"
             android:textColor="@color/white"
             android:layout_height="wrap_content" android:id="@+id/txtDificultad"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/gridBackground" android:layout_marginTop="50dp"/>
+            app:layout_constraintBottom_toTopOf="@+id/txtTurno"
+            android:layout_marginBottom="10dp" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    <ImageView
+            android:layout_width="220dp"
+            android:layout_height="150dp"
+            app:srcCompat="@drawable/logo"
+            android:id="@+id/imageView2"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
