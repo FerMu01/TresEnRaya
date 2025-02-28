@@ -4,7 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/main"
-        android:background="@color/white"
+        android:background="#0D0D0D"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".Juego">
@@ -12,6 +12,7 @@
     <ImageView
             android:id="@+id/gridBackground"
             android:layout_width="330dp"
+            android:tint="@color/white"
             android:layout_height="wrap_content"
             android:src="@drawable/grid_lines"
             app:layout_constraintTop_toTopOf="parent"
@@ -33,82 +34,118 @@
 
         <Button
                 android:id="@+id/button1"
-                android:layout_width="90dp"
-                android:layout_height="100dp"
-                android:layout_margin="16dp"
+                android:layout_width="95dp"
+                android:background="@android:color/transparent"
+                android:backgroundTint="@null"
+                android:layout_height="95dp"
+                android:layout_margin="14dp"
                 android:text=""/>
 
         <Button
                 android:id="@+id/button2"
-                android:layout_width="90dp"
-                android:layout_height="100dp"
-                android:layout_margin="16dp"
+                android:layout_width="95dp"
+                android:layout_height="95dp"
+                android:backgroundTint="@null"
+                android:layout_margin="14dp"
+                android:background="@android:color/transparent"
+
                 android:text=""/>
 
         <Button
                 android:id="@+id/button3"
-                android:layout_width="90dp"
-                android:layout_height="100dp"
-                android:layout_margin="16dp"
+                android:layout_width="95dp"
+                android:backgroundTint="@null"
+                android:background="@android:color/transparent"
+
+                android:layout_height="95dp"
+                android:layout_margin="14dp"
                 android:text=""/>
 
         <Button
                 android:id="@+id/button4"
-                android:layout_width="90dp"
-                android:layout_height="100dp"
-                android:layout_margin="16dp"
+                android:layout_width="95dp"
+                android:backgroundTint="@null"
+                android:background="@android:color/transparent"
+
+                android:layout_height="95dp"
+                android:layout_margin="14dp"
                 android:text=""/>
 
         <Button
                 android:id="@+id/button5"
-                android:layout_width="90dp"
-                android:layout_height="100dp"
-                android:layout_margin="16dp"
+                android:layout_width="95dp"
+                android:layout_height="95dp"
+                android:background="@android:color/transparent"
+
+                android:backgroundTint="@null"
+                android:layout_margin="14dp"
                 android:text=""/>
 
         <Button
                 android:id="@+id/button6"
-                android:layout_width="90dp"
-                android:layout_height="100dp"
-                android:layout_margin="16dp"
+                android:layout_width="95dp"
+                android:layout_height="95dp"
+                android:background="@android:color/transparent"
+                android:layout_margin="14dp"
                 android:text=""/>
 
         <Button
                 android:id="@+id/button7"
-                android:layout_width="90dp"
-                android:layout_height="100dp"
-                android:layout_margin="16dp"
+                android:layout_width="95dp"
+                android:layout_height="95dp"
+                android:backgroundTint="@null"
+                android:background="@android:color/transparent"
+
+                android:layout_margin="14dp"
                 android:text=""/>
 
         <Button
                 android:id="@+id/button8"
-                android:layout_width="90dp"
-                android:layout_height="100dp"
-                android:layout_margin="16dp"
+                android:layout_width="95dp"
+                android:layout_height="95dp"
+                android:backgroundTint="@null"
+                android:background="@android:color/transparent"
+
+                android:layout_margin="14dp"
                 android:text=""/>
 
         <Button
                 android:id="@+id/button9"
-                android:layout_width="90dp"
-                android:layout_height="100dp"
-                android:layout_margin="16dp"
+                android:layout_width="95dp"
+                android:layout_height="95dp"
+                android:layout_margin="14dp"
+                android:background="@android:color/transparent"
+
+                android:backgroundTint="@null"
                 android:text=""/>
 
     </GridLayout>
     <TextView
             android:text="Turno"
             android:layout_width="wrap_content"
+            android:textColor="@color/white"
             android:layout_height="wrap_content"
             android:id="@+id/txtTurno"
             android:textSize="25dp"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="135dp"/>
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="100dp"/>
     <Button
             android:text="Volver A Jugar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#000CAD"
+            android:textColor="@color/white"
             android:id="@+id/btnReinicio"
             android:enabled="false"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="50dp"/>
+    <TextView
+            android:text="Dificultad:"
+            android:layout_width="wrap_content"
+            android:textSize="25dp"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content" android:id="@+id/txtDificultad"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/gridBackground" android:layout_marginTop="50dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
+

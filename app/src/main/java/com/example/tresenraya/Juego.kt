@@ -14,6 +14,7 @@ class Juego : AppCompatActivity() {
     private lateinit var board: Array<Array<Button>>
     private lateinit var txtTurno: TextView
     private lateinit var btnReinicio: Button
+    private lateinit var txtDificultad: TextView
 
     private var currentPlayer = "X"
     private val boardStatus = Array(3) { Array(3) { "" } } // Estado del tablero
@@ -24,16 +25,21 @@ class Juego : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_juego)
+        window.statusBarColor = android.graphics.Color.WHITE
 
-        // Asignar el TextView y botón de reinicio
+        // Asignar los TextView y botón de reinicio
         txtTurno = findViewById(R.id.txtTurno)
         btnReinicio = findViewById(R.id.btnReinicio)
+        txtDificultad = findViewById(R.id.txtDificultad)
         btnReinicio.isEnabled = false
 
         // Obtener configuración del intent
         userIcon = intent.getStringExtra("jugadorInicial") ?: "X"
         gameMode = intent.getStringExtra("dificultad") ?: "Facil"
         inicio = intent.getStringExtra("inicio") ?: "Al Azar"
+
+        // Mostrar la dificultad seleccionada
+        txtDificultad.text = "Dificultad: $gameMode"
 
         // Determinar quién inicia
         currentPlayer = when (inicio) {
@@ -80,7 +86,14 @@ class Juego : AppCompatActivity() {
     private fun onCellClicked(row: Int, col: Int) {
         if (boardStatus[row][col].isNotEmpty() || currentPlayer != userIcon) return
 
-        board[row][col].text = currentPlayer
+        // Asignar la imagen correspondiente y eliminar cualquier tint
+        if (currentPlayer == "X") {
+            board[row][col].setBackgroundResource(R.drawable.equis)
+        } else {
+            board[row][col].setBackgroundResource(R.drawable.redondo)
+        }
+        board[row][col].backgroundTintList = null
+
         boardStatus[row][col] = currentPlayer
 
         if (checkWinnerFor(userIcon)) {
@@ -94,7 +107,6 @@ class Juego : AppCompatActivity() {
             return
         }
 
-        // Cambiar turno a la CPU
         currentPlayer = getCpuMarker()
         txtTurno.text = "Turno De La CPU"
         delayedCpuMove()
@@ -134,7 +146,7 @@ class Juego : AppCompatActivity() {
         }
     }
 
-    // Modo Medio: heurística similar a la anterior
+    // Modo Medio: intenta ganar o bloquear; si no, heurística (centro con probabilidad, esquinas)
     private fun medioCpuMove(): Boolean {
         val cpuMarker = getCpuMarker()
         val winMove = findWinningMove(cpuMarker)
@@ -154,7 +166,8 @@ class Juego : AppCompatActivity() {
         val corners = listOf(Pair(0, 0), Pair(0, 2), Pair(2, 0), Pair(2, 2))
         val availableCorners = corners.filter { boardStatus[it.first][it.second].isEmpty() }
         if (availableCorners.isNotEmpty()) {
-            makeCpuMove(availableCorners.random().first, availableCorners.random().second)
+            val chosenCorner = availableCorners.random()
+            makeCpuMove(chosenCorner.first, chosenCorner.second)
             return true
         }
         return false
@@ -215,9 +228,15 @@ class Juego : AppCompatActivity() {
     private fun max(a: Int, b: Int): Int = if (a > b) a else b
     private fun min(a: Int, b: Int): Int = if (a < b) a else b
 
-    // Realiza el movimiento de la CPU en la celda (row, col)
     private fun makeCpuMove(row: Int, col: Int) {
-        board[row][col].text = currentPlayer
+        // Asignar la imagen correspondiente y eliminar el tint para que se respeten los colores originales
+        if (currentPlayer == "X") {
+            board[row][col].setBackgroundResource(R.drawable.equis)
+        } else {
+            board[row][col].setBackgroundResource(R.drawable.redondo)
+        }
+        board[row][col].backgroundTintList = null
+
         boardStatus[row][col] = currentPlayer
         if (checkWinnerFor(getCpuMarker())) {
             txtTurno.text = "Gano La CPU"
@@ -233,7 +252,6 @@ class Juego : AppCompatActivity() {
         txtTurno.text = "Es Tu Turno"
     }
 
-    // Busca un movimiento ganador para el marcador dado y lo retorna; de lo contrario, null.
     private fun findWinningMove(marker: String): Pair<Int, Int>? {
         for (i in 0..2) {
             for (j in 0..2) {
@@ -250,7 +268,6 @@ class Juego : AppCompatActivity() {
         return null
     }
 
-    // Función auxiliar que verifica si un marcador gana en el tablero (sin afectar el tablero global).
     private fun checkWinFor(marker: String, board: Array<Array<String>>): Boolean {
         for (i in 0..2) {
             if (board[i][0] == marker && board[i][1] == marker && board[i][2] == marker) return true
@@ -261,12 +278,10 @@ class Juego : AppCompatActivity() {
         return false
     }
 
-    // Función auxiliar ya existente que usa boardStatus
     private fun checkWinFor(marker: String): Boolean {
         return checkWinFor(marker, boardStatus)
     }
 
-    // Verifica si el tablero está lleno (usando boardStatus).
     private fun isBoardFull(): Boolean {
         return isBoardFull(boardStatus)
     }
@@ -280,12 +295,10 @@ class Juego : AppCompatActivity() {
         return true
     }
 
-    // Utiliza checkWinFor para el marcador indicado.
     private fun checkWinnerFor(marker: String): Boolean {
         return checkWinFor(marker)
     }
 
-    // Devuelve el marcador que usa la CPU (opuesto al del usuario).
     private fun getCpuMarker(): String {
         return if (userIcon == "X") "O" else "X"
     }
@@ -293,7 +306,8 @@ class Juego : AppCompatActivity() {
     private fun resetBoard() {
         for (i in 0..2) {
             for (j in 0..2) {
-                board[i][j].text = ""
+                // Limpiamos la imagen de fondo (dejándolo sin recurso)
+                board[i][j].setBackgroundResource(0)
                 boardStatus[i][j] = ""
             }
         }
